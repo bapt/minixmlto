@@ -63,5 +63,4 @@ txt)
 	;;
 esac
 
-echo ${xslt} ${xslargs} ${xslpath} ${2} ${post_args}
 eval ${xslt} ${xslargs} ${xslpath} ${2} ${post_args}
