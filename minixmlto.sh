@@ -26,9 +26,6 @@
 #
 #
 
-error() {
-	echo "$@" >&2
-
 docboockpath="@DOCBOOK_XSL@"
 
 err() {
