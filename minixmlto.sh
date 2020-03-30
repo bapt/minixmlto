@@ -26,7 +26,7 @@
 #
 #
 
-docboockpath="@DOCBOOK_XSL@"
+docbookpath="@DOCBOOK_XSL@"
 
 err() {
 	ec=$1
@@ -42,17 +42,17 @@ xslt=$(which xsltproc)
 
 case $1 in
 man)
-	xslpath=${docboockpath}/manpages/docbook.xsl
+	xslpath=${docbookpath}/manpages/docbook.xsl
 	;;
 html-nochunks)
-	xslpath=${docboockpath}/html/docbook.xsl
+	xslpath=${docbookpath}/html/docbook.xsl
 	xslargs="-o $(basename ${2%.*}.html)"
 	;;
 html|html-dir)
-	xslpath=${docboockpath}/html/chunk.xsl
+	xslpath=${docbookpath}/html/chunk.xsl
 	;;
 txt)
-	xslpath=${docboockpath}/html/docbook.xsl
+	xslpath=${docbookpath}/html/docbook.xsl
 	post_args="| sed -e 's/&#8212;/-/g' | html2text -nobs -style pretty -o $(basename ${2%.*}.txt)"
 	;;
 *)
