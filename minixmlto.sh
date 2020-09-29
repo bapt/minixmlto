@@ -36,6 +36,21 @@ err() {
 }
 set -e
 
+output=""
+
+while getopts "o:" option; do
+	case "$option" in
+	'o')
+		output="> ${OPTARG}"
+	;;
+	*)
+		err 1 "Unsupported option ${option}"
+	;;
+	esac
+done
+
+shift $((OPTIND - 1))
+
 [ $# -eq 2 ] || err 1 "usage: $0 <format> <file>"
 xslt=$(which xsltproc)
 [ -x ${xslt} ] || err 1 "xsltproc: not found"
@@ -60,4 +75,4 @@ txt)
 	;;
 esac
 
-eval ${xslt} ${xslargs} ${xslpath} ${2} ${post_args}
+eval ${xslt} ${xslargs} ${xslpath} ${2} ${post_args} ${output}
