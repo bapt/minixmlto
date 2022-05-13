@@ -74,7 +74,7 @@ man)
 	;;
 html-nochunks)
 	xslpath=${docbookpath}/html/docbook.xsl
-	xslargs="$xslargs -o $(basename ${2%.*}.html)"
+	xslargs="${xslargs} -o $(basename ${2%.*}.html)"
 	;;
 html|html-dir)
 	xslpath=${docbookpath}/html/chunk.xsl
