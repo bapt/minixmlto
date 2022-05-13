@@ -43,28 +43,32 @@ usage() {
 
 output=""
 xslt=$(command -v xsltproc)
-[ -x ${xslt} ] || err 1 "xsltproc: not found"
-
-ARGS=$(getopt -o "o:" --longoptions=stringparam: -- "$@")
-[ $? -eq 0 ] || usage
-
-eval set -- "$ARGS"
-while [ $# -gt 0 ]; do
-	case "$1" in
-	-o)
-		output="> $2"
-		shift 2
-		;;
-	--stringparam)
-		xslargs="--stringparam ${2%=*} ${2#*=}"
-		shift 2
-		;;
-	--)
-		shift
-		break
-		;;
-        esac
+r=1
+for arg in "$@"; do
+	if [ -n "$r" ]; then
+		unset r
+		set --
+	fi
+	case "$arg" in
+		--stringparam) set -- "$@" -P ;;
+		*) set -- "$@" "$arg" ;;
+	esac
 done
+
+while getopts "o:P:" option; do
+	case "$option" in
+	'o')
+		output="> ${OPTARG}"
+		;;
+	'P')
+		xslargs="--stringparam ${OPTARG%=*} ${OPTARG#*=}"
+		;;
+	*)
+		err 1 "Unsupported option ${option}"
+		;;
+	esac
+done
+shift $((OPTIND-1))
 
 [ $# -ne 2 ] && usage
 
