@@ -41,22 +41,28 @@ usage() {
 	exit 1
 }
 
+output=""
 xslt=$(command -v xsltproc)
 [ -x ${xslt} ] || err 1 "xsltproc: not found"
 
-ARGS=$(getopt -o "" --longoptions=stringparam: -- "$@")
+ARGS=$(getopt -o "o:" --longoptions=stringparam: -- "$@")
 [ $? -eq 0 ] || usage
 
 eval set -- "$ARGS"
 while [ $# -gt 0 ]; do
 	case "$1" in
+	-o)
+		output="> $2"
+		shift 2
+		;;
 	--stringparam)
 		xslargs="--stringparam ${2%=*} ${2#*=}"
 		shift 2
 		;;
 	--)
 		shift
-		break;
+		break
+		;;
         esac
 done
 
@@ -82,4 +88,4 @@ txt)
 	;;
 esac
 
-eval ${xslt} ${xslargs} ${xslpath} ${2} ${post_args}
+eval ${xslt} ${xslargs} ${xslpath} ${2} ${post_args} ${output}
