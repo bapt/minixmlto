@@ -40,18 +40,6 @@ usage() {
 	echo "Usage: $0 [--stringparam=param] <format> <file>" >&2
 	exit 1
 }
-mypath=$(realpath $0)
-myshare=""
-case "$mypath" in
-*/bin/*) # don't hardcode the executable name
-	myprefix="${mypath%bin/*}"
-	myshare="${myprefix}/share/minixmlto"
-	;;
-*)
-	myprefix="${mypath%/*}"
-	myshare="${myprefix}"
-	;;
-esac
 
 output=""
 xslt=$(command -v xsltproc)
@@ -93,7 +81,7 @@ html|html-dir)
 	;;
 txt)
 	xslpath=${docbookpath}/html/docbook.xsl
-	post_args="| sed -e 's/&#8212;/-/g' | html2text -nobs -rcfile $myshare/pretty.style -o $(basename ${2%.*}.txt)"
+	post_args="| sed -e 's/&#8212;/-/g' | html2text -nobs -style pretty -o $(basename ${2%.*}.txt)"
 	;;
 *)
 	err 1 "Unsupported format"
