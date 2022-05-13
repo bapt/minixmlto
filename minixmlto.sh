@@ -34,11 +34,33 @@ err() {
 	echo $@ >&2
 	exit $ec
 }
-set -e
 
-[ $# -eq 2 ] || err 1 "usage: $0 <format> <file>"
-xslt=$(which xsltproc)
+set -e
+usage() {
+	echo "Usage: $0 [--stringparam=param] <format> <file>" >&2
+	exit 1
+}
+
+xslt=$(command -v xsltproc)
 [ -x ${xslt} ] || err 1 "xsltproc: not found"
+
+ARGS=$(getopt -o "" --longoptions=stringparam: -- "$@")
+[ $? -eq 0 ] || usage
+
+eval set -- "$ARGS"
+while [ $# -gt 0 ]; do
+	case "$1" in
+	--stringparam)
+		xslargs="--stringparam ${2%=*} ${2#*=}"
+		shift 2
+		;;
+	--)
+		shift
+		break;
+        esac
+done
+
+[ $# -ne 2 ] && usage
 
 case $1 in
 man)
@@ -46,7 +68,7 @@ man)
 	;;
 html-nochunks)
 	xslpath=${docbookpath}/html/docbook.xsl
-	xslargs="-o $(basename ${2%.*}.html)"
+	xslargs="$xslargs -o $(basename ${2%.*}.html)"
 	;;
 html|html-dir)
 	xslpath=${docbookpath}/html/chunk.xsl
