@@ -75,12 +75,18 @@ shift $((OPTIND-1))
 case $1 in
 man)
 	xslpath=${docbookpath}/manpages/docbook.xsl
-	cmd="docbook2mdoc ${2}"
+	opts=""
 	if [ -n "${PREFER_DOCBOOK2MDOC}" ]; then
 		if [ -z "${output}" ]; then
-			output="> $(basename ${2%.*}.1)"
+			outfile=$(basename ${2%.*})
+			case "$outfile" in
+			*.[0-9]) opts="-s ${outfile#*.}" ;;
+			*) outfile="${outfile}.1" ;;
+			esac
+			output="> ${outfile}"
 		fi
 	fi
+	cmd="docbook2mdoc ${opts} ${2}"
 	;;
 html-nochunks)
 	xslpath=${docbookpath}/html/docbook.xsl
