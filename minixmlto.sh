@@ -75,6 +75,12 @@ shift $((OPTIND-1))
 case $1 in
 man)
 	xslpath=${docbookpath}/manpages/docbook.xsl
+	cmd="docbook2mdoc ${2}"
+	if [ -n "${PREFER_DOCBOOK2MDOC}" ]; then
+		if [ -z "${output}" ]; then
+			output="> $(basename ${2%.*}.1)"
+		fi
+	fi
 	;;
 html-nochunks)
 	xslpath=${docbookpath}/html/docbook.xsl
@@ -86,10 +92,15 @@ html|html-dir)
 txt)
 	xslpath=${docbookpath}/html/docbook.xsl
 	post_args="| sed -e 's/&#8212;/-/g' | html2text -nobs -style pretty -o $(basename ${2%.*}.txt)"
+	cmd="docbook2mdoc ${2} | mandoc -T utf8 > $(basename ${2%.*}.txt)"
 	;;
 *)
 	err 1 "Unsupported format"
 	;;
 esac
 
-eval ${xslt} ${xslargs} ${xslpath} ${2} ${post_args} ${output}
+if [ -n "${PREFER_DOCBOOK2MDOC}" -a -n "${cmd}" ]; then
+	eval ${cmd} ${output}
+else
+	eval ${xslt} ${xslargs} ${xslpath} ${2} ${post_args} ${output}
+fi
